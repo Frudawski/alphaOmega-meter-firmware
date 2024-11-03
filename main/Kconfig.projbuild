@@ -1,0 +1,105 @@
+menu "Camera-Board configuration"
+
+config XCLK_FREQ
+  int "XCLK Frequency"
+  default "20000000"
+  help
+      The XCLK Frequency in Herz.
+      
+menu "Pin Configuration"
+  config D0
+    int "D0"
+    default "5"
+  config D1
+    int "D1"
+    default "18"
+  config D2
+    int "D2"
+    default "19"
+  config D3
+    int "D3"
+    default "21"
+  config D4
+    int "D4"
+    default "36"
+  config D5
+    int "D5"
+    default "39"
+  config D6
+    int "D6"
+    default "34"
+  config D7
+    int "D7"
+    default "35"
+  config XCLK
+    int "XCLK"
+    default "0"
+  config PCLK
+    int "PCLK"
+    default "22"
+  config VSYNC
+    int "VSYNC"
+    default "25"
+  config HREF
+    int "HREF"
+    default "23"
+  config SDA
+    int "SDA"
+    default "26"
+  config SCL
+    int "SCL"
+    default "27"
+  config RESET
+    int "RESET"
+    default "32"
+endmenu
+	
+endmenu
+
+
+menu "DS18B20 Configuration"
+
+config ONE_WIRE_GPIO
+    int "OneWire GPIO number"
+	range 0 33
+	default 12
+	help
+		GPIO number (IOxx) to access One Wire Bus.
+
+		Some GPIOs are used for other purposes (flash connections, etc.) and cannot be used.
+
+		GPIOs 34-39 are input-only so cannot be used to drive the One Wire Bus.
+
+config ENABLE_STRONG_PULLUP_GPIO
+    bool "Enable strong pull-up controlled by GPIO (MOSFET)"
+    default n
+    help
+        An external circuit can be used to provide a strong pull-up to the One Wire Bus.
+        This is useful when the bus has parasitic-powered devices and extra current is
+        required to power them, such as during temperature ADC conversions.
+
+        An example of such a circuit for the ESP32 is a P-channel MOSFET (such as the BS250)
+        connected Source-to-Drain between a current-limiting resistor (e.g. 270ohm for 12mA
+        max at 3.3V), itself connected to VCC, and the One Wire Bus data line. The Gate is
+        connected to the GPIO specified here.
+
+config STRONG_PULLUP_GPIO
+    int "Strong pull-up GPIO number"
+    range 0 33
+    default 5
+    help
+		GPIO number (IOxx) to control the strong pull-up on the One Wire Bus, perhaps
+		via a P-channel MOSFET between VCC and the One Wire Bus data line.
+
+		This GPIO will be set as an output and driven high during temperature conversion.
+		This would enable the MOSFET providing current to the devices.
+
+		At all other times it will be driven low, switching off the MOSFET and allowing
+		the One Wire Bus to operate normally.
+
+		Some GPIOs are used for other purposes (flash connections, etc.) and cannot be used.
+
+		GPIOs 34-39 are input-only so cannot be used to drive the One Wire Bus.
+    depends on ENABLE_STRONG_PULLUP_GPIO
+
+endmenu

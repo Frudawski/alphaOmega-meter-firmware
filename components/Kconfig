@@ -1,0 +1,112 @@
+menu "Camera configuration"
+      
+config OV2640_SUPPORT
+	bool "OV2640 Support"
+	default y
+	help
+		Enable this option if you want to use the OV2640.
+		Disable this option to save memory.
+
+config OV7725_SUPPORT
+	bool "OV7725 Support"
+	default n
+	help
+		Enable this option if you want to use the OV7725.
+		Disable this option to save memory.
+	
+config OV3660_SUPPORT
+    bool "OV3660 Support"
+    default y
+    help
+        Enable this option if you want to use the OV3360.
+        Disable this option to save memory.
+    
+config OV5640_SUPPORT
+    bool "OV5640 Support"
+    default y
+    help
+        Enable this option if you want to use the OV5640.
+        Disable this option to save memory.
+    
+config SCCB_HARDWARE_I2C
+    bool "Use hardware I2C for SCCB"
+    default y
+    help
+        Enable this option if you want to use hardware I2C to control the camera.
+        Disable this option to use software I2C.
+    
+choice SCCB_HARDWARE_I2C_PORT
+    bool "I2C peripheral to use for SCCB"
+    depends on SCCB_HARDWARE_I2C
+    default SCCB_HARDWARE_I2C_PORT1
+
+    config SCCB_HARDWARE_I2C_PORT0
+        bool "I2C0"
+    config SCCB_HARDWARE_I2C_PORT1
+        bool "I2C1"
+
+endchoice
+
+choice CAMERA_TASK_PINNED_TO_CORE
+    bool "Camera task pinned to core"
+    default CAMERA_CORE0
+    help
+        Pin the camera handle task to a certain core(0/1). It can also be done automatically choosing NO_AFFINITY.
+
+    config CAMERA_CORE0
+        bool "CORE0"
+    config CAMERA_CORE1
+        bool "CORE1"
+    config CAMERA_NO_AFFINITY
+        bool "NO_AFFINITY"
+
+endchoice
+    
+endmenu
+
+menu "ds18b20 Configuration"
+
+config ONE_WIRE_GPIO
+    int "OneWire GPIO number"
+	range 0 33
+	default 4
+	help
+		GPIO number (IOxx) to access One Wire Bus.
+
+		Some GPIOs are used for other purposes (flash connections, etc.) and cannot be used.
+
+		GPIOs 34-39 are input-only so cannot be used to drive the One Wire Bus.
+
+config ENABLE_STRONG_PULLUP_GPIO
+    bool "Enable strong pull-up controlled by GPIO (MOSFET)"
+    default n
+    help
+        An external circuit can be used to provide a strong pull-up to the One Wire Bus.
+        This is useful when the bus has parasitic-powered devices and extra current is
+        required to power them, such as during temperature ADC conversions.
+
+        An example of such a circuit for the ESP32 is a P-channel MOSFET (such as the BS250)
+        connected Source-to-Drain between a current-limiting resistor (e.g. 270ohm for 12mA
+        max at 3.3V), itself connected to VCC, and the One Wire Bus data line. The Gate is
+        connected to the GPIO specified here.
+
+config STRONG_PULLUP_GPIO
+    int "Strong pull-up GPIO number"
+    range 0 33
+    default 5
+    help
+		GPIO number (IOxx) to control the strong pull-up on the One Wire Bus, perhaps
+		via a P-channel MOSFET between VCC and the One Wire Bus data line.
+
+		This GPIO will be set as an output and driven high during temperature conversion.
+		This would enable the MOSFET providing current to the devices.
+
+		At all other times it will be driven low, switching off the MOSFET and allowing
+		the One Wire Bus to operate normally.
+
+		Some GPIOs are used for other purposes (flash connections, etc.) and cannot be used.
+
+		GPIOs 34-39 are input-only so cannot be used to drive the One Wire Bus.
+    depends on ENABLE_STRONG_PULLUP_GPIO
+
+endmenu
