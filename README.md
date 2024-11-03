@@ -23,6 +23,7 @@ For the assembly and firmware flashing of the αΩ-meter the following component
 * Red and black wire
 * Micro-SD card (FAT32 formatted)
 
+## Citation:
 [![DOI](https://zenodo.org/badge/882595502.svg)](https://doi.org/10.5281/zenodo.14030222)
 
  
